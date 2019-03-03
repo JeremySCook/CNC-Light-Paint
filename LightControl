@@ -1,0 +1,91 @@
+// CNC light painting Arduino program
+// Used with Arduino Nano
+// By Jeremy S. Cook 3/3/2019
+//
+// Includes code from:
+// NeoPixel Ring simple sketch (c) 2013 Shae Erisson
+// released under the GPLv3 license to match the rest of the AdaFruit NeoPixel library
+
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+
+// How many NeoPixels are attached to the Arduino?
+#define PINRGB 4
+#define NUMPIXELSRGB   1
+Adafruit_NeoPixel pixelsRGB = Adafruit_NeoPixel(NUMPIXELSRGB, PINRGB, NEO_RGB + NEO_KHZ800);
+
+int delayval = 50; // delay for half a second
+int button = 0;
+int DIP9 = 0;
+int DIP10 = 0;
+int DIP11 = 0;
+int DIP12 = 0;
+
+void setup() {
+  pinMode(7, INPUT_PULLUP);
+  pinMode(9, INPUT_PULLUP);
+  pinMode(10, INPUT_PULLUP);
+  pinMode(11, INPUT_PULLUP);
+  pinMode(12, INPUT_PULLUP);
+  
+  pixelsRGB.begin(); // This initializes the NeoPixel library as pixelsRGB object.
+  Serial.begin(9600);
+}
+
+void loop() {
+
+button = digitalRead(7);
+DIP9 = digitalRead(9);
+DIP10 = digitalRead(10);
+DIP11 = digitalRead(11);
+DIP12 = digitalRead(12);
+
+if (button == HIGH){
+  Serial.println("button off");
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(0,0,0)); // Green/Red/Blue here
+  pixelsRGB.show(); // This sends the updated pixel color to the hardware.
+}
+
+else if (button == LOW && DIP9 == LOW){
+  Serial.println("button pressed");
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(50,0,0)); // Green/Red/Blue
+  pixelsRGB.show(); // This sends the updated pixel color to the hardware.
+  delay(500);
+}
+
+else if (button == LOW && DIP10 == LOW){
+  Serial.println("button pressed");
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(0,50,0)); // Green/Red/Blue
+  pixelsRGB.show(); // This sends the updated pixel color to the hardware.
+  delay(500);
+}
+
+else if (button == LOW && DIP11 == LOW){
+  Serial.println("button pressed");
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(0,0,50)); // Green/Red/Blue
+  pixelsRGB.show(); // This sends the updated pixel color to the hardware.
+  delay(500);
+}
+
+else if (button == LOW && DIP12 == LOW){
+  Serial.println("button pressed => yellow");
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(30,30,0)); // Green/Red/Blue
+  pixelsRGB.show(); // This sends the updated pixel color to the hardware.
+  delay(500);
+}  
+
+else if (button == LOW){
+  Serial.println("button pressed => random");
+  int randomGreen = random(50, 256);
+  int randomRed = random(50, 256);
+  int randomBlue = random(50, 256);
+  if (randomGreen < randomRed && randomGreen < randomBlue) randomGreen = 0;
+  if (randomRed < randomGreen && randomRed < randomBlue) randomRed = 0;
+  if (randomBlue < randomRed && randomBlue < randomGreen) randomBlue = 0; 
+  pixelsRGB.setPixelColor(0, pixelsRGB.Color(randomGreen,randomRed,randomBlue)); //sets random color and light - note GRB strip
+  pixelsRGB.show();
+  delay(500);
+}
+}
